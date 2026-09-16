@@ -56,8 +56,15 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Conta criada com sucesso!");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Ocorreu um erro");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "";
+      const message = errorMessage.toLowerCase();
+
+      if (message.includes("failed to fetch") || message.includes("networkerror")) {
+        toast.error("Não foi possível conectar ao servidor. Verifique a URL do Supabase e sua conexão.");
+      } else {
+        toast.error(errorMessage || "Ocorreu um erro");
+      }
     } finally {
       setLoading(false);
     }
